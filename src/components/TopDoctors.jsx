@@ -14,7 +14,7 @@ const TopDoctors = () => {
       </p>
 
       <div className='w-full grid grid-cols-auto gap-4 pt-5 gap-y-6 px-3 sm:px-0'>
-        {doctors.slice(0, 10).map((doctor, i) => (
+        {doctors && doctors.slice(0, 10).map((doctor, i) => (
           <div
             onClick={() => {
               navigate(`/appiontment/${doctor._id}`);
