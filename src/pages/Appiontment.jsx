@@ -9,7 +9,7 @@ const Appiontment = () => {
   const { docId } = useParams();
   const navigate = useNavigate();
   const daysOfWeeks = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-  const { doctors, serverURL, token, dollerSign,getDoctors, bookAnAppointment } =
+  const { doctors, serverURL, token, dollerSign, getDoctors } =
     useContext(AppContext);
   const [docInfo, setDocInfo] = useState(null);
   const [docSlots, setDocSlots] = useState([]);
@@ -59,6 +59,7 @@ const Appiontment = () => {
         const year = currentDate.getFullYear();
         const slotDate = day + "_" + month + "_" + year;
         const slotTime = formattedTime;
+        console.log(slotTime);
 
         const isAvailableSlot =
           docInfo.slots_booked[slotDate] &&
@@ -105,9 +106,8 @@ const Appiontment = () => {
 
           if (data.success) {
             navigate("/my-appiontments");
-            getDoctors()
+            getDoctors();
           }
-      
         } catch (error) {
           console.log(error);
         }

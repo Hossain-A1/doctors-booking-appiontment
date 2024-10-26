@@ -79,6 +79,7 @@ export const AppContextProvider = (props) => {
     getUsersProfile,
     users,
     setUsers,
+    axios,toast
   };
 
   return (

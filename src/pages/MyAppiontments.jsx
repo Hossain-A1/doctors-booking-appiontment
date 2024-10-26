@@ -1,9 +1,28 @@
 import React, { useContext, useEffect } from "react";
+import axios from "axios";
 import { AppContext } from "../context/AppContext";
 
 const MyAppiontments = () => {
-  const { appointments, userAppointments } = useContext(AppContext);
-  console.log(appointments);
+  const { appointments,getDoctors, userAppointments, serverURL, toast, token } =
+    useContext(AppContext);
+
+  const cancleAppointment = async (appointmentId) => {
+    try {
+      const { data } = await axios.put(
+        serverURL + "/api/user/cancle-appointment",
+        { appointmentId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (data.success) {
+        toast.success("Canclled appointment");
+        userAppointments()
+        getDoctors()
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     userAppointments();
@@ -47,12 +66,18 @@ const MyAppiontments = () => {
                 </div>
                 <div>{/* responsive */}</div>
                 <div className='flex flex-col gap-1  justify-end'>
-                  <button className='text-sm text-center  text-stone-500 sm: min-w-[48] py-2 px-4 border rounded hover:text-white hover:bg-primary transition-all duration-300'>
+                 {
+                  !item.cancelled ?<>
+                   <button className='text-sm text-center  text-stone-500 sm: min-w-[48] py-2 px-4 border rounded hover:text-white hover:bg-primary transition-all duration-300'>
                     Pay Online
                   </button>
-                  <button className='text-sm text-center text-stone-500 sm: min-w-[48] py-2 px-4 border rounded hover:text-gray-900 hover:bg-red-600 transition-all duration-300'>
+                  <button
+                    onClick={() => cancleAppointment(item._id)}
+                    className='text-sm text-center text-stone-500 sm: min-w-[48] py-2 px-4 border rounded hover:text-gray-900 hover:bg-red-600 transition-all duration-300'
+                  >
                     Cancel Appointment
-                  </button>
+                  </button></>:<button className="p-2 rounded text-red-700 border">Appointment Canclled</button>
+                 }
                 </div>
               </div>
             ))}
