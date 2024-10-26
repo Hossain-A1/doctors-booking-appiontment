@@ -7,3 +7,10 @@ export const fetchDoctorsData = async (serverURL) => {
 
   return doctors;
 };
+
+
+export const fetchUsersData=async(URL,token)=>{
+  const users = await axios.get(URL + "/api/user/get-profile",{headers:{Authorization:`Bearer ${token}`}});
+
+  return users;
+}

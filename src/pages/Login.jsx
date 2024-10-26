@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { z } from "zod";
@@ -49,14 +50,16 @@ const Login = () => {
           email: "",
           password: "",
         });
-
         // Set token in localStorage and context
         const token = resData.data.payload;
         localStorage.setItem("token", token);
         setToken(token);
-        navigate("/");
+        {
+          navigate("/");
+          scrollTo(0, 0);
+        }
       } else {
-        throw new Error("Something went worng");
+        toast.error("Invalid email or password!");
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -104,36 +107,44 @@ const Login = () => {
               onChange={loginInputData}
               value={loginData.name}
             />
-            {error.name && <p className="text-red-600 text-xs font-semibold">{error.name}</p>}
+            {error.name && (
+              <p className='text-red-600 text-xs font-semibold'>{error.name}</p>
+            )}
           </div>
         )}
         <div className='w-full'>
           <label htmlFor='email'></label>
           <input
-           className={` ${
-            error.email ? " bg-red-100" : "bg-transparent"
-          } border border-zinc-300 rounded w-full p-2 mt-1`}
+            className={` ${
+              error.email ? " bg-red-100" : "bg-transparent"
+            } border border-zinc-300 rounded w-full p-2 mt-1`}
             name='email'
             type='email'
             placeholder='Email'
             onChange={loginInputData}
             value={loginData.email}
           />
-           {error.email && <p className="text-red-600 text-xs font-semibold">{error.email}</p>}
+          {error.email && (
+            <p className='text-red-600 text-xs font-semibold'>{error.email}</p>
+          )}
         </div>
         <div className='w-full'>
           <label htmlFor='password'></label>
           <input
-     className={` ${
-      error.password ? " bg-red-100" : "bg-transparent"
-    } border border-zinc-300 rounded w-full p-2 mt-1`}
+            className={` ${
+              error.password ? " bg-red-100" : "bg-transparent"
+            } border border-zinc-300 rounded w-full p-2 mt-1`}
             name='password'
             type='password'
             placeholder='Password'
             onChange={loginInputData}
             value={loginData.password}
           />
-           {error.password && <p className="text-red-600 text-xs font-semibold">{error.password}</p>}
+          {error.password && (
+            <p className='text-red-600 text-xs font-semibold'>
+              {error.password}
+            </p>
+          )}
         </div>
         <button className='bg-primary text-white w-full py-2 rounded-md text-base'>
           {state === "Sign Up" ? "Create an account" : "Login"}

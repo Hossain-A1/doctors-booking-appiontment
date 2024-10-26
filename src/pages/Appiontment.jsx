@@ -2,13 +2,15 @@ import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import { assets } from "../assets/assets";
+import axios from "axios";
 import RelatedDoctors from "../components/RelatedDoctors";
 
 const Appiontment = () => {
   const { docId } = useParams();
   const navigate = useNavigate();
   const daysOfWeeks = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-  const { doctors, dollerSign, bookAnAppointment } = useContext(AppContext);
+  const { doctors, serverURL, token, dollerSign,getDoctors, bookAnAppointment } =
+    useContext(AppContext);
   const [docInfo, setDocInfo] = useState(null);
   const [docSlots, setDocSlots] = useState([]);
   const [slotIntex, setSlotIndex] = useState(0);
@@ -52,11 +54,25 @@ const Appiontment = () => {
           minute: "2-digit",
         });
 
-        //add slot data to the array
-        timeSlots.push({
-          datetime: new Date(currentDate),
-          time: formattedTime,
-        });
+        const day = currentDate.getDay();
+        const month = currentDate.getMonth();
+        const year = currentDate.getFullYear();
+        const slotDate = day + "_" + month + "_" + year;
+        const slotTime = formattedTime;
+
+        const isAvailableSlot =
+          docInfo.slots_booked[slotDate] &&
+          docInfo.slots_booked[slotDate].includes(slotTime)
+            ? false
+            : true;
+
+        if (isAvailableSlot) {
+          //add slot data to the array
+          timeSlots.push({
+            datetime: new Date(currentDate),
+            time: formattedTime,
+          });
+        }
 
         //increment current time by 30 minutes
         currentDate.setMinutes(currentDate.getMinutes() + 30);
@@ -74,21 +90,34 @@ const Appiontment = () => {
   useEffect(() => {
     fetchDoctorsInfo();
   }, [docInfo, docId]);
-  
- // ------booking details get------------//
- const handleBooking = () => {
-  if (docSlots[slotIntex] && docSlots[slotIntex][0]) {
-    const selectedDate = docSlots[slotIntex][0].datetime.toDateString();
-    if (slotTime) {
-      bookAnAppointment(docId, slotTime, selectedDate); // Save appointment details
-      navigate("/my-appiontments");
+
+  // ------booking details get------------//
+  const handleBooking = async () => {
+    if (docSlots[slotIntex] && docSlots[slotIntex][0]) {
+      const slotDate = docSlots[slotIntex][0].datetime.toDateString();
+      if (slotTime) {
+        try {
+          const { data } = await axios.post(
+            serverURL + "/api/user/book-appointment",
+            { docId, slotTime, slotDate },
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+
+          if (data.success) {
+            navigate("/my-appiontments");
+            getDoctors()
+          }
+      
+        } catch (error) {
+          console.log(error);
+        }
+      } else {
+        alert("Please select a time slot before booking.");
+      }
     } else {
-      alert("Please select a time slot before booking.");
+      alert("Selected slot is unavailable. Please try again.");
     }
-  } else {
-    alert("Selected slot is unavailable. Please try again.");
-  }
-};
+  };
   return (
     docInfo && (
       <main>

@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Doctors from "./pages/Doctors";
 import MyAppointments from "./pages/MyAppiontments";
+import { Toaster } from "react-hot-toast";
 import Contact from "./pages/Contact";
 import About from "./pages/About";
 import Login from "./pages/Login";
@@ -13,7 +14,8 @@ import Footer from "./components/Footer";
 const App = () => {
   return (
     <div className='mx-4 sm:mx-[10%]'>
-      <Navbar/>
+      <Toaster />
+      <Navbar />
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/doctors' element={<Doctors />} />
@@ -25,7 +27,7 @@ const App = () => {
         <Route path='/my-appiontments' element={<MyAppointments />} />
         <Route path='/appiontment/:docId' element={<Appiontment />} />
       </Routes>
-      <Footer/>
+      <Footer />
     </div>
   );
 };
