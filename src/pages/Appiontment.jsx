@@ -105,7 +105,7 @@ const Appiontment = () => {
           );
 
           if (data.success) {
-            navigate("/my-appiontments");
+            navigate("/");
             getDoctors();
           }
         } catch (error) {
