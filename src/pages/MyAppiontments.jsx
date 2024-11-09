@@ -3,8 +3,14 @@ import axios from "axios";
 import { AppContext } from "../context/AppContext";
 
 const MyAppiontments = () => {
-  const { appointments,getDoctors, userAppointments, serverURL, toast, token } =
-    useContext(AppContext);
+  const {
+    appointments,
+    getDoctors,
+    userAppointments,
+    serverURL,
+    toast,
+    token,
+  } = useContext(AppContext);
 
   const cancleAppointment = async (appointmentId) => {
     try {
@@ -16,9 +22,27 @@ const MyAppiontments = () => {
 
       if (data.success) {
         toast.success("Canclled appointment");
-        userAppointments()
-        getDoctors()
+        userAppointments();
+        getDoctors();
       }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const payAppointment = async (appointmentId) => {
+    try {
+      const { data } = await axios.post(
+        serverURL + "/api/user/pay-appointment",
+        { appointmentId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (data.success) {
+        toast.success("paid successfully");
+        userAppointments();
+      }
+     
     } catch (error) {
       console.log(error);
     }
@@ -66,18 +90,26 @@ const MyAppiontments = () => {
                 </div>
                 <div>{/* responsive */}</div>
                 <div className='flex flex-col gap-1  justify-end'>
-                 {
-                  !item.cancelled ?<>
-                   <button className='text-sm text-center  text-stone-500 sm: min-w-[48] py-2 px-4 border rounded hover:text-white hover:bg-primary transition-all duration-300'>
-                    Pay Online
-                  </button>
-                  <button
-                    onClick={() => cancleAppointment(item._id)}
-                    className='text-sm text-center text-stone-500 sm: min-w-[48] py-2 px-4 border rounded hover:text-gray-900 hover:bg-red-600 transition-all duration-300'
-                  >
-                    Cancel Appointment
-                  </button></>:<button className="p-2 rounded text-red-700 border">Appointment Canclled</button>
-                 }
+                  {!item.cancelled ? (
+                    <>
+                      <button
+                        onClick={() => payAppointment(item._id)}
+                        className='text-sm text-center  text-stone-500 sm: min-w-[48] py-2 px-4 border rounded hover:text-white hover:bg-primary transition-all duration-300'
+                      >
+                        {item.payment ? "Paid" : "Pay Online"}
+                      </button>
+                      <button
+                        onClick={() => cancleAppointment(item._id)}
+                        className='text-sm text-center text-stone-500 sm: min-w-[48] py-2 px-4 border rounded hover:text-gray-900 hover:bg-red-600 transition-all duration-300'
+                      >
+                        Cancel Appointment
+                      </button>
+                    </>
+                  ) : (
+                    <button className='p-2 rounded text-red-700 border'>
+                      Appointment Canclled
+                    </button>
+                  )}
                 </div>
               </div>
             ))}

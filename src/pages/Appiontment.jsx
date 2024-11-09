@@ -4,6 +4,7 @@ import { AppContext } from "../context/AppContext";
 import { assets } from "../assets/assets";
 import axios from "axios";
 import RelatedDoctors from "../components/RelatedDoctors";
+import toast from "react-hot-toast";
 
 const Appiontment = () => {
   const { docId } = useParams();
@@ -98,6 +99,10 @@ const Appiontment = () => {
       const slotDate = docSlots[slotIntex][0].datetime.toDateString();
       if (slotTime) {
         try {
+          if (!token) {
+            toast.error("Please, login to get access book an appointment!");
+            return navigate("/login");
+          }
           const { data } = await axios.post(
             serverURL + "/api/user/book-appointment",
             { docId, slotTime, slotDate },
@@ -105,7 +110,7 @@ const Appiontment = () => {
           );
 
           if (data.success) {
-            navigate("/");
+            navigate("/my-appiontments");
             getDoctors();
           }
         } catch (error) {
